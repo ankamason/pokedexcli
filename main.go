@@ -40,6 +40,12 @@ func main() {
         // Get the command name (first word)
         commandName := words[0]
 
+        // Get arguments (remaining words)
+        args := []string{}
+        if len(words) > 1 {
+            args = words[1:]
+        }
+
         // Look up the command in the registry
         command, exists := getCommands()[commandName]
 
@@ -48,8 +54,8 @@ func main() {
             continue
         }
 
-        // Call the callback with config and handle any errors
-        err := command.callback(cfg)
+        // Call the callback with config, args and handle any errors
+        err := command.callback(cfg, args)
         if err != nil {
             fmt.Println(err)
         }
