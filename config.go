@@ -7,4 +7,5 @@ type config struct {
     pokeapiClient *pokeapi.Client
     nextURL       *string
     previousURL   *string
+    pokedex       map[string]pokeapi.PokemonResponse
 }

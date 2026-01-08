@@ -2,6 +2,7 @@ package main
 
 import (
     "fmt"
+    "math/rand"
     "os"
     "strings"
 )
@@ -40,6 +41,11 @@ func getCommands() map[string]cliCommand {
             name:        "explore",
             description: "Explore a location area for Pokemon",
             callback:    commandExplore,
+        },
+        "catch": {
+            name:        "catch",
+            description: "Attempt to catch a Pokemon",
+            callback:    commandCatch,
         },
     }
 }
@@ -138,6 +144,40 @@ func commandExplore(cfg *config, args []string) error {
     fmt.Println("Found Pokemon:")
     for _, encounter := range locationArea.PokemonEncounters {
         fmt.Printf(" - %s\n", encounter.Pokemon.Name)
+    }
+
+    return nil
+}
+
+// Callback for the catch command
+func commandCatch(cfg *config, args []string) error {
+    // Check if Pokemon name was provided
+    if len(args) < 1 {
+        return fmt.Errorf("please provide a Pokemon name")
+    }
+
+    pokemonName := args[0]
+    fmt.Printf("Throwing a Pokeball at %s...\n", pokemonName)
+
+    // Fetch Pokemon data
+    pokemon, err := cfg.pokeapiClient.GetPokemon(pokemonName)
+    if err != nil {
+        return err
+    }
+
+    // Calculate catch chance based on base experience
+    // Higher base experience = harder to catch
+    // Base experience ranges roughly from 36 (easy) to 608 (legendary)
+    catchThreshold := rand.Intn(300)
+
+    if catchThreshold > pokemon.BaseExperience {
+        // Caught!
+        cfg.pokedex[pokemonName] = pokemon
+        fmt.Printf("%s was caught!\n", pokemonName)
+        fmt.Println("You may now inspect it with the inspect command.")
+    } else {
+        // Escaped
+        fmt.Printf("%s escaped!\n", pokemonName)
     }
 
     return nil

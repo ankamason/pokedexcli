@@ -13,6 +13,7 @@ func main() {
     // Initialize the config with PokeAPI client (5 minute cache)
     cfg := &config{
         pokeapiClient: pokeapi.NewClient(5 * time.Minute),
+        pokedex:       make(map[string]pokeapi.PokemonResponse),
     }
 
     // Create a scanner that reads from standard input
